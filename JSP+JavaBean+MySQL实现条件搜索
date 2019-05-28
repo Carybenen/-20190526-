@@ -1,0 +1,79 @@
+问题描述：
+在数据库建立一张会议室表，通过jsp页面将这张表显示，并实现对这张表的条件搜索
+关键代码（以下是通过会议室号的搜索）：
+java代码：
+package database.operation;
+import java.sql.*;
+
+public class ConditionS {
+	String number;
+	StringBuffer queryResultByNumber;
+	
+	public ConditionS(){
+		queryResultByNumber = new StringBuffer();
+		//queryResultBySalary = new StringBuffer();
+		try
+		{
+		Class.forName("com.mysql.jdbc.Driver");
+		}catch(Exception e){}
+	}
+	
+	public void setNumber(String s){
+		number = s.trim();
+		queryResultByNumber = new StringBuffer();
+		//queryResultBySalary = new StringBuffer();
+	}
+	
+	public String getNumber(){
+		return number;
+	}
+	
+	public StringBuffer getQueryResultByNumber(){
+		String condition = "select * from meetingRoom where name = '"+number+"'";
+		queryResultByNumber = f(condition);
+		return queryResultByNumber;
+    }
+    
+	private StringBuffer f(String condition){
+		StringBuffer str = new StringBuffer();
+		Connection con;
+		Statement sql;
+		ResultSet rs;
+		try
+		{
+			String uri="jdbc:mysql://localhost:3306/mymm?serverTimezone=GMT";//连接数据库
+	    	con = DriverManager.getConnection(uri,"root","huahua001");
+			sql = con.createStatement();
+			rs = sql.executeQuery(condition);
+			
+			str.append("<table border = 1>");
+			str.append("<th width = 100>"+"name");
+			str.append("<th width = 100>"+"people");
+			str.append("<th width = 100>"+"rent");
+			str.append("<th width = 100>"+"other");
+			while(rs.next())
+			{
+				str.append("<tr>");
+				str.append("<td>"+rs.getString(1)+"</td>");
+				str.append("<td>"+rs.getString(2)+"</td>");
+				str.append("<td>"+rs.getString(3)+"</td>");
+				str.append("<td>"+rs.getString(4)+"</td>");
+				str.append("<tr>");
+			}
+			str.append("<table border = 1>");
+			con.close();
+		}catch(SQLException e)
+		{
+			System.out.println(e);
+		}
+		return str;
+	}
+}
+
+jsp页面：
+<form action = "条件查询显示结果.jsp" method = post>
+  会议室号查询
+  <br>输入会议室号：<input type = text name = "number"><input type = submit name = "g" value = "提交">
+  </form>
+    根据会议室号<jsp:getProperty name = "base" property = "number"/>查询到的记录:
+  <br><jsp:getProperty name = "base" property = "queryResultByNumber"/>
