@@ -1,0 +1,51 @@
+问题描述:
+1.在数据库建一个用户表（userTable）
+2.jsp页面建立连接
+3.用户登录
+Q:将用户注册的个人信息表显示出来，而不是将整个用户表显示出来
+
+问题解决：
+1.将用户登录的用户密码通过表单来传值给另一个jsp页面
+关键代码：
+<form action = "XX.jsp" method = post name = form>
+用户名   <input type = "text" name = "user" value = "" ><br>
+<p></p>
+密  码   <input type = "password" name ="password" value = "" ><br>
+<P>
+<input type = "submit" value = "登录" name = "submit1">   
+</form>
+
+2.通过表单传过来的用户密码，从数据库里匹配，匹配完成后就可以显示个人信息表
+关键代码：
+Connection con;
+  Statement sql;
+  ResultSet rs;
+  try{
+  Class.forName("com.mysql.jdbc.Driver");
+  }
+  catch(Exception e) {
+  out.print(e);
+  }
+  try{
+  String uri = "jdbc:mysql://localhost:3306/test?serverTimezone=GMT";
+  con = DriverManager.getConnection(uri,"root","password");
+  sql = con.createStatement();
+  rs = sql.executeQuery("select user,password,section,number from userTable where user='" +b+ "'and password='" + b1 + "'");
+  out.print("<table border = 1>");
+  while(rs.next())
+  {
+  out.print("<tr>");
+  out.print("<td>"+rs.getString(1)+"</td>");
+  out.print("<td>"+rs.getString(2)+"</td>");
+  out.print("<td>"+rs.getString(3)+"</td>");
+  out.print("<td>"+rs.getString(4)+"</td>");
+  out.print("</tr>");
+  }
+  out.print("</table>");
+  con.close();
+  }
+  catch(SQLException e1)
+  {
+  out.print(e1);
+  }
+   %>
